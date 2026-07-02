@@ -1,7 +1,9 @@
 from moviepy import (
     VideoFileClip,
     AudioFileClip,
-    concatenate_videoclips
+    CompositeAudioClip,
+    concatenate_videoclips,
+    concatenate_audioclips
 )
 
 
@@ -61,7 +63,7 @@ class Composer:
             clips.append(clip)
 
         ###################################################
-        # Merge
+        # Merge Videos
         ###################################################
 
         final_video = concatenate_videoclips(
@@ -73,11 +75,53 @@ class Composer:
         # Audio
         ###################################################
 
-        audio = AudioFileClip(
+        # Narration
+        narration = AudioFileClip(
             str(project / "voice" / "narration.mp3")
         )
 
-        final_video = final_video.with_audio(audio)
+        # Background Music
+        music = AudioFileClip(
+            "assets/music/tech.mp3"
+        )
+
+        # Match music duration with narration
+        if music.duration > narration.duration:
+
+            music = music.subclipped(
+                0,
+                narration.duration
+            )
+
+        else:
+
+            loops = int(
+                narration.duration / music.duration
+            ) + 1
+
+            music = concatenate_audioclips(
+                [music] * loops
+            )
+
+            music = music.subclipped(
+                0,
+                narration.duration
+            )
+
+        # Lower music volume
+        music = music.with_volume_scaled(0.10)
+
+        # Mix narration + music
+        final_audio = CompositeAudioClip(
+            [
+                music,
+                narration
+            ]
+        )
+
+        final_video = final_video.with_audio(
+            final_audio
+        )
 
         ###################################################
         # Export
