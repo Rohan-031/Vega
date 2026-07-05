@@ -2,381 +2,383 @@
 
 import React, { useState } from "react";
 import { Sidebar } from "@/components/ui/sidebar";
-import { Card } from "@/components/ui/card";
-import { StatCard, StatsGrid } from "@/components/ui/stats";
-import { ProjectCard } from "@/components/ui/project-card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
   Sparkles, 
-  Search, 
-  Bell, 
-  Plus, 
-  Flame, 
-  Cpu, 
+  Folder, 
   Video, 
-  Users, 
-  Activity,
-  ArrowRight,
-  TrendingUp,
-  ExternalLink
+  Database, 
+  RefreshCw, 
+  ChevronRight, 
+  Play, 
+  FolderOpen, 
+  MoreVertical, 
+  Lightbulb,
+  Zap
 } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Dashboard() {
-  const [activeTab, setActiveTab] = useState("all");
-  const [isSearching, setIsSearching] = useState(false);
+  const [selectedTrend, setSelectedTrend] = useState(1); // Default Card 1 selected as in the screenshot
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // Stagger variants for page load entry
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-        delayChildren: 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 15 },
-    show: { 
-      opacity: 1, 
-      y: 0,
-      transition: { type: "spring", stiffness: 350, damping: 28 }
-    }
-  };
-
-  // Indian Trends Data for the Right Panel
-  const indianTrends = [
-    { name: "#IPL2026Auction", spike: "+240%", source: "Twitter India", category: "Sports" },
-    { name: "Chandrayaan-4 Launch", spike: "+185%", source: "Google Trends", category: "Science" },
-    { name: "Tax Slab Changes 2026", spike: "+120%", source: "Google Trends", category: "Finance" },
-    { name: "AI Coding Studio Startup", spike: "+95%", source: "Twitter India", category: "Tech" },
-    { name: "Taj Mahal Restoration", spike: "+45%", source: "News India", category: "Culture" },
-  ];
-
-  // Project List
-  const projects = [
+  // 5 Top Trends from India (as in the screenshot)
+  const topTrends = [
     {
-      title: "#Chandrayaan4Launch: India's Next Moon Journey",
-      status: "Completed",
-      duration: "0:35",
-      timestamp: "2 hours ago",
-      aspectRatio: "9:16",
-      gradientFrom: "from-blue-100",
-      gradientTo: "to-indigo-150",
-      views: "12.4K",
-      tab: "completed"
+      id: 1,
+      title: "Samsung Galaxy Z Fold 6 Launch",
+      articles: 5,
+      image: "/samsung_fold_6.png"
     },
     {
-      title: "#Budget2026: Tax Reform Highlights Simplified",
-      status: "Rendering",
-      duration: "0:58",
-      timestamp: "5 mins ago",
-      aspectRatio: "9:16",
-      gradientFrom: "from-amber-100",
-      gradientTo: "to-orange-100",
-      views: 0,
-      tab: "rendering"
+      id: 2,
+      title: "AI Agents Are Taking Over",
+      articles: 12,
+      image: "/ai_agents_trend.png"
     },
     {
-      title: "#CricketVictory: IND vs AUS Historic Over",
-      status: "Completed",
-      duration: "0:45",
-      timestamp: "1 day ago",
-      aspectRatio: "9:16",
-      gradientFrom: "from-emerald-100",
-      gradientTo: "to-teal-150",
-      views: "42.1K",
-      tab: "completed"
+      id: 3,
+      title: "OpenAI New Model Rumors",
+      articles: 8,
+      image: "/openai_rumors.png"
     },
     {
-      title: "Indian AI Startup Ecosystem Boom Explainer",
-      status: "Draft",
-      duration: "1:02",
-      timestamp: "3 days ago",
-      aspectRatio: "16:9",
-      gradientFrom: "from-purple-100",
-      gradientTo: "to-fuchsia-100",
-      views: 0,
-      tab: "drafts"
+      id: 4,
+      title: "India Budget 2025 Highlights",
+      articles: 7,
+      image: "/india_budget.png"
+    },
+    {
+      id: 5,
+      title: "Tesla Robotaxi Update",
+      articles: 6,
+      image: "/tesla_robotaxi.png"
     }
   ];
 
-  const filteredProjects = activeTab === "all" 
-    ? projects 
-    : projects.filter(p => p.tab === activeTab);
+  // Previous Projects list (from the screenshot)
+  const previousProjects = [
+    {
+      id: 1,
+      name: "Samsung AI Launch.mp4",
+      trend: "Samsung Galaxy Z Fold 6 Launch",
+      created: "2 days ago",
+      duration: "00:34",
+      status: "Completed",
+      image: "/samsung_fold_6.png"
+    },
+    {
+      id: 2,
+      name: "Tesla Robotaxi Update.mp4",
+      trend: "Tesla Robotaxi Update",
+      created: "5 days ago",
+      duration: "00:31",
+      status: "Completed",
+      image: "/tesla_robotaxi.png"
+    },
+    {
+      id: 3,
+      name: "OpenAI GPT-5 Rumors.mp4",
+      trend: "OpenAI New Model Rumors",
+      created: "1 week ago",
+      duration: "00:29",
+      status: "Completed",
+      image: "/openai_rumors.png"
+    },
+    {
+      id: 4,
+      name: "India Budget 2025.mp4",
+      trend: "India Budget 2025 Highlights",
+      created: "1 week ago",
+      duration: "00:28",
+      status: "Completed",
+      image: "/india_budget.png"
+    }
+  ];
+
+  const handleRefresh = () => {
+    setIsRefreshing(true);
+    setTimeout(() => {
+      setIsRefreshing(false);
+    }, 1000);
+  };
+
+  const handleStartPipeline = (trendTitle) => {
+    alert(`Starting the AI video generation pipeline for: "${trendTitle}"\nStep 1 of 3 complete! Proceeding to script analysis...`);
+  };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-bg-base">
-      {/* 1. Collapsible Left Sidebar */}
-      <Sidebar activePath="/dashboard" />
+    <div className="flex h-screen overflow-hidden bg-bg-base text-ink-primary">
+      {/* 1. Left Sidebar */}
+      <Sidebar activePath="/" />
 
-      {/* 2. Main Dashboard Window */}
-      <main className="flex-1 flex flex-col overflow-hidden">
+      {/* 2. Main content area */}
+      <main className="flex-1 flex flex-col overflow-hidden bg-[#fafafb]">
         
-        {/* Top Navigation Bar */}
-        <header className="h-16 border-b border-border-soft bg-bg-surface px-8 flex items-center justify-between shrink-0">
-          {/* Left: Breadcrumbs or Project Selector */}
-          <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold text-ink-muted uppercase tracking-wider">Workspace</span>
-            <span className="text-xs text-border-active">/</span>
-            <span className="text-sm font-semibold text-ink-primary">Main Dashboard</span>
+        {/* Main Workspace Header */}
+        <header className="px-8 py-6 flex items-center justify-between shrink-0 border-b border-border-soft bg-white">
+          <div className="space-y-1">
+            <span className="text-xs font-bold text-accent-primary tracking-wide uppercase">
+              Step 1 of 3
+            </span>
+            <h1 className="text-2xl font-extrabold text-ink-primary tracking-tight">
+              Select a Trend to Get Started
+            </h1>
+            <p className="text-xs text-ink-secondary">
+              Choose a trending topic and let VEGA handle the rest
+            </p>
           </div>
 
-          {/* Right: Search + Action Control panel */}
-          <div className="flex items-center gap-4">
-            {/* Search command bar layout */}
-            <div className={`relative flex items-center border rounded-lg transition-all ${
-              isSearching ? "w-64 border-accent-primary ring-1 ring-accent-primary/20" : "w-48 border-border-soft"
-            } bg-bg-muted/50 px-3 py-1.5`}>
-              <Search className="w-3.5 h-3.5 text-ink-muted shrink-0 mr-2" />
-              <input 
-                type="text" 
-                placeholder="Search..." 
-                onFocus={() => setIsSearching(true)}
-                onBlur={() => setIsSearching(false)}
-                className="w-full text-xs font-medium text-ink-primary bg-transparent focus:outline-none placeholder-ink-muted"
-              />
-              <span className="text-[10px] font-mono font-bold bg-white text-ink-muted border border-border-soft px-1 rounded shadow-sm select-none pointer-events-none shrink-0">
-                ⌘K
-              </span>
+          {/* Three Small Stats cards on the right */}
+          <div className="flex gap-4 select-none">
+            <div className="flex items-center gap-3 bg-white border border-border-soft rounded-xl p-3.5 shadow-sm min-w-[140px]">
+              <div className="w-8 h-8 rounded-lg bg-accent-primary/10 flex items-center justify-center text-accent-primary">
+                <Folder className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <div className="text-base font-extrabold text-ink-primary leading-tight">14</div>
+                <div className="text-[10px] text-ink-muted font-bold uppercase tracking-wider">Projects</div>
+              </div>
             </div>
 
-            {/* Notification triggers */}
-            <button className="relative p-2 hover:bg-bg-muted rounded-lg text-ink-secondary hover:text-ink-primary transition-colors cursor-pointer">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-accent-primary rounded-full" />
-            </button>
+            <div className="flex items-center gap-3 bg-white border border-border-soft rounded-xl p-3.5 shadow-sm min-w-[140px]">
+              <div className="w-8 h-8 rounded-lg bg-accent-primary/10 flex items-center justify-center text-accent-primary">
+                <Video className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <div className="text-base font-extrabold text-ink-primary leading-tight">14</div>
+                <div className="text-[10px] text-ink-muted font-bold uppercase tracking-wider">Videos</div>
+              </div>
+            </div>
 
-            {/* Primary CTA: Start Vega */}
-            <Button variant="primary" icon={Sparkles}>
-              Start Vega
-            </Button>
+            <div className="flex items-center gap-3 bg-white border border-border-soft rounded-xl p-3.5 shadow-sm min-w-[170px]">
+              <div className="w-8 h-8 rounded-lg bg-accent-primary/10 flex items-center justify-center text-accent-primary">
+                <Database className="w-4.5 h-4.5" />
+              </div>
+              <div>
+                <div className="text-base font-extrabold text-ink-primary leading-tight">2.3 GB</div>
+                <div className="text-[10px] text-ink-muted font-bold uppercase tracking-wider">Storage Used</div>
+              </div>
+            </div>
           </div>
         </header>
 
-        {/* Dashboard Workstation Scroll Context */}
+        {/* Workstation Scrollable Viewport */}
         <div className="flex-1 overflow-y-auto px-8 py-6 space-y-8">
           
-          {/* Welcome Area Section */}
-          <motion.section 
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ type: "spring", stiffness: 350, damping: 26 }}
-            className="flex flex-col md:flex-row md:items-center justify-between p-6 rounded-xl border border-border-soft bg-bg-surface relative overflow-hidden dot-grid"
-          >
-            {/* Soft backdrop radial light reflection */}
-            <div className="absolute top-0 right-0 w-80 h-80 bg-accent-primary/[0.015] rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="space-y-1.5 relative z-10 max-w-xl">
-              <h2 className="text-xl font-bold text-ink-primary tracking-tight font-sans flex items-center gap-2">
-                Good morning, Creator
-                <motion.span 
-                  animate={{ rotate: [0, 15, -10, 15, 0] }}
-                  transition={{ repeat: Infinity, repeatDelay: 5, duration: 1.5 }}
-                >
-                  👋
-                </motion.span>
-              </h2>
-              <p className="text-xs text-ink-secondary leading-relaxed">
-                VEGA is active and scraping Indian trends. We've detected <span className="text-trend-spark font-bold">3 viral breakouts</span> in the last hour. Let the agents compose a video on the latest trends automatically.
-              </p>
-            </div>
-
-            <div className="mt-4 md:mt-0 relative z-10">
-              <Button variant="glow" icon={Plus}>
-                Create Custom Project
-              </Button>
-            </div>
-          </motion.section>
-
-          {/* Dummy Statistics Grid */}
-          <motion.section 
-            variants={containerVariants}
-            initial="hidden"
-            animate="show"
-            className="space-y-3"
-          >
-            <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">
-              Workspace Performance Metrics
-            </div>
-            
-            <StatsGrid>
-              <motion.div variants={itemVariants}>
-                <StatCard 
-                  title="Scraped Trends" 
-                  value="42" 
-                  change="+12% today" 
-                  isPositive={true}
-                  icon={Flame}
-                  description="Updated 2 mins ago"
-                />
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <StatCard 
-                  title="AI Video Outputs" 
-                  value="18" 
-                  change="2 in progress" 
-                  isPositive={true}
-                  icon={Video}
-                  description="Total renders this week"
-                />
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <StatCard 
-                  title="Combined Social Reach" 
-                  value="148.5K" 
-                  change="+32.4% vs lw" 
-                  isPositive={true}
-                  icon={Users}
-                  description="YouTube & Reels metrics"
-                />
-              </motion.div>
-              <motion.div variants={itemVariants}>
-                <StatCard 
-                  title="Pipeline Efficiency" 
-                  value="99.8%" 
-                  change="-0.2%" 
-                  isPositive={false}
-                  icon={Activity}
-                  description="Average API response 1.2s"
-                />
-              </motion.div>
-            </StatsGrid>
-          </motion.section>
-
-          {/* Action Trigger Card & Projects Panel Layout */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-start">
-            
-            {/* Left side: Project Grid Section */}
-            <div className="lg:col-span-2 space-y-4">
-              <div className="flex items-center justify-between">
-                <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider">
-                  Recent Generation Projects
-                </div>
-                
-                {/* Visual tabs controls */}
-                <div className="flex bg-bg-muted p-0.5 rounded-lg border border-border-soft">
-                  {["all", "completed", "rendering", "drafts"].map((t) => (
-                    <button
-                      key={t}
-                      onClick={() => setActiveTab(t)}
-                      className={`px-2.5 py-1 text-xs font-semibold rounded-md capitalize transition-all cursor-pointer ${
-                        activeTab === t 
-                          ? "bg-bg-surface text-ink-primary shadow-sm" 
-                          : "text-ink-secondary hover:text-ink-primary"
-                      }`}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
+          {/* Today's Top Trends (India) Section */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <h2 className="text-xs font-bold text-ink-primary uppercase tracking-wider">
+                  Today's Top Trends (India)
+                </h2>
+                <span className="text-[10px] font-semibold bg-bg-muted text-ink-secondary px-2 py-0.5 rounded-full border border-border-soft">
+                  Updated: 10:30 AM
+                </span>
               </div>
+              <button 
+                onClick={handleRefresh}
+                className="flex items-center gap-1.5 text-xs text-ink-secondary hover:text-ink-primary font-semibold transition-colors cursor-pointer"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? "animate-spin" : ""}`} />
+                Refresh
+              </button>
+            </div>
 
-              {/* Projects Grid with exit/enter transitions */}
-              {filteredProjects.length === 0 ? (
-                <div className="border border-dashed border-border-soft rounded-xl p-12 text-center text-ink-muted bg-bg-surface/50">
-                  No projects in this category.
-                </div>
-              ) : (
-                <motion.div 
-                  layout
-                  className="grid grid-cols-1 sm:grid-cols-2 gap-4"
-                >
-                  {filteredProjects.map((project, index) => (
+            {/* Horizontal scroll grid of cards */}
+            <div className="relative">
+              <div className="flex gap-4 overflow-x-auto pb-4 pr-12 scrollbar-thin scroll-smooth no-scrollbar">
+                {topTrends.map((trend) => {
+                  const isSelected = selectedTrend === trend.id;
+                  return (
                     <motion.div
-                      key={project.title}
-                      layout
-                      initial={{ opacity: 0, scale: 0.98 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.98 }}
-                      transition={{ duration: 0.2 }}
+                      key={trend.id}
+                      onClick={() => setSelectedTrend(trend.id)}
+                      className={`flex-none w-[220px] bg-white rounded-2xl border transition-all duration-300 overflow-hidden cursor-pointer select-none relative group ${
+                        isSelected 
+                          ? "border-accent-primary ring-2 ring-accent-primary/10 shadow-md scale-[1.01]" 
+                          : "border-border-soft hover:border-border-active hover:shadow-sm"
+                      }`}
+                      whileHover={{ y: isSelected ? 0 : -2 }}
                     >
-                      <ProjectCard {...project} />
-                    </motion.div>
-                  ))}
-                </motion.div>
-              )}
-            </div>
-
-            {/* Right side: Trends Ticker Panel */}
-            <div className="space-y-4">
-              <div className="text-[11px] font-bold text-ink-muted uppercase tracking-wider flex items-center gap-1.5">
-                <TrendingUp className="w-3.5 h-3.5 text-accent-primary" />
-                Active Indian Trends (Real-time)
-              </div>
-
-              <Card className="p-4 space-y-3" hoverable={false}>
-                <div className="space-y-3 divide-y divide-border-soft">
-                  {indianTrends.map((trend, i) => (
-                    <div 
-                      key={trend.name} 
-                      className={`pt-3 first:pt-0 flex items-start justify-between group/item`}
-                    >
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs font-bold text-ink-primary group-hover/item:text-accent-primary transition-colors">
-                            {trend.name}
-                          </span>
-                          <span className="text-[9px] font-semibold bg-trend-spark/10 text-trend-spark px-1.5 py-0.2 rounded-md">
-                            {trend.spike}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-1.5 mt-0.5 text-[10px] text-ink-muted">
-                          <span>{trend.source}</span>
-                          <span>•</span>
-                          <span>{trend.category}</span>
-                        </div>
+                      {/* Top Rank Badge */}
+                      <div className="absolute top-3 left-3 z-10 w-6 h-6 rounded-full bg-accent-primary text-white flex items-center justify-center text-xs font-bold shadow-sm">
+                        {trend.id}
                       </div>
-                      
-                      <button className="text-ink-muted group-hover/item:text-accent-primary p-1 hover:bg-bg-muted rounded-md transition-all cursor-pointer">
-                        <ArrowRight className="w-3.5 h-3.5 group-hover/item:translate-x-0.5 transition-transform" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
 
-                <div className="pt-3 border-t border-border-soft text-center">
-                  <a 
-                    href="#" 
-                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-accent-primary hover:underline"
-                  >
-                    Open Trend Radar
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                </div>
-              </Card>
+                      {/* Image Thumbnail Container */}
+                      <div className="h-[125px] relative bg-bg-muted overflow-hidden border-b border-border-soft">
+                        <img 
+                          src={trend.image} 
+                          alt={trend.title} 
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out" 
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                      </div>
 
-              {/* Start Vega Quick-Launch Banner */}
-              <div className="bg-gradient-to-br from-indigo-50/50 to-blue-50/50 border border-accent-primary/10 rounded-xl p-5 relative overflow-hidden flex flex-col gap-3 group/banner dot-grid">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-accent-primary/5 rounded-full blur-xl pointer-events-none" />
-                
-                <div className="w-8 h-8 rounded-lg bg-accent-primary/10 flex items-center justify-center text-accent-primary border border-accent-primary/15 shadow-sm">
-                  <Cpu className="w-4 h-4" />
-                </div>
-                
-                <div className="space-y-1">
-                  <h4 className="font-semibold text-xs text-ink-primary">
-                    Launch Trend-to-Video pipeline
-                  </h4>
-                  <p className="text-[10px] text-ink-secondary leading-relaxed">
-                    Automatically crawl breaking topics, research sources, script narration, generate visuals, and mix assets into finished Reels.
-                  </p>
-                </div>
-                
-                <Button 
-                  variant="primary" 
-                  className="w-full text-xs font-semibold bg-accent-primary hover:bg-opacity-95 shadow-sm mt-1 py-2"
-                  icon={Sparkles}
+                      {/* Content details */}
+                      <div className="p-4 flex flex-col justify-between h-[135px]">
+                        <div>
+                          <h3 className="text-xs font-bold text-ink-primary leading-snug line-clamp-2 min-h-[32px] group-hover:text-accent-primary transition-colors">
+                            {trend.title}
+                          </h3>
+                          <span className="text-[10px] text-ink-muted font-semibold block mt-1.5">
+                            {trend.articles} Articles
+                          </span>
+                        </div>
+
+                        {/* CTA button inside Card */}
+                        <button 
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleStartPipeline(trend.title);
+                          }}
+                          className="w-full py-2 px-3 rounded-xl text-xs font-bold bg-accent-primary text-white hover:bg-opacity-95 shadow-sm shadow-accent-primary/20 transition-all duration-200 cursor-pointer flex items-center justify-center gap-1.5"
+                        >
+                          <Zap className="w-3.5 h-3.5" />
+                          Generate
+                        </button>
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </div>
+
+              {/* Next button centered on the right edge */}
+              <div className="absolute right-0 top-1/2 -translate-y-1/2 z-10">
+                <button 
+                  onClick={() => {
+                    const scrollContainer = document.querySelector(".overflow-x-auto");
+                    if (scrollContainer) {
+                      scrollContainer.scrollBy({ left: 200, behavior: "smooth" });
+                    }
+                  }}
+                  className="w-8 h-8 rounded-full bg-white border border-border-soft shadow-md hover:shadow-lg flex items-center justify-center text-ink-primary hover:text-accent-primary hover:border-accent-primary transition-all cursor-pointer mr-[-16px]"
                 >
-                  Start Vega AI Pipeline
-                </Button>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
             </div>
+          </section>
 
+          {/* Previous Projects Section */}
+          <section className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-xs font-bold text-ink-primary uppercase tracking-wider">
+                Previous Projects
+              </h2>
+              <button 
+                onClick={() => alert("Redirecting to all projects...")}
+                className="text-xs font-bold text-accent-primary hover:underline transition-all cursor-pointer"
+              >
+                View all
+              </button>
+            </div>
+
+            {/* Light themed table design */}
+            <div className="bg-white border border-border-soft rounded-2xl shadow-sm overflow-hidden">
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="bg-bg-muted/40 border-b border-border-soft text-[10px] font-bold text-ink-muted uppercase tracking-wider select-none">
+                    <th className="py-3.5 px-6 w-[60px]">#</th>
+                    <th className="py-3.5 px-6">Project Name</th>
+                    <th className="py-3.5 px-6">Trend</th>
+                    <th className="py-3.5 px-6">Created On</th>
+                    <th className="py-3.5 px-6 w-[120px]">Duration</th>
+                    <th className="py-3.5 px-6 w-[130px]">Status</th>
+                    <th className="py-3.5 px-6 w-[140px] text-right">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border-soft text-xs text-ink-secondary">
+                  {previousProjects.map((project) => (
+                    <tr 
+                      key={project.id}
+                      className="hover:bg-bg-muted/10 transition-colors"
+                    >
+                      {/* Row index */}
+                      <td className="py-4 px-6 font-semibold text-ink-muted">
+                        {project.id}
+                      </td>
+
+                      {/* Project Name with Thumbnail */}
+                      <td className="py-4 px-6">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-7 rounded bg-bg-muted overflow-hidden border border-border-soft shrink-0">
+                            <img src={project.image} alt={project.name} className="w-full h-full object-cover" />
+                          </div>
+                          <span className="font-bold text-ink-primary hover:text-accent-primary transition-colors cursor-pointer">
+                            {project.name}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Associated Trend */}
+                      <td className="py-4 px-6 font-semibold text-ink-secondary">
+                        {project.trend}
+                      </td>
+
+                      {/* Created date */}
+                      <td className="py-4 px-6 text-ink-muted font-medium">
+                        {project.created}
+                      </td>
+
+                      {/* Video duration */}
+                      <td className="py-4 px-6 font-mono text-ink-secondary font-medium">
+                        {project.duration}
+                      </td>
+
+                      {/* Status pill badge */}
+                      <td className="py-4 px-6">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-trend-spark/10 text-trend-spark border border-trend-spark/15">
+                          <span className="w-1.5 h-1.5 rounded-full bg-trend-spark animate-pulse" />
+                          {project.status}
+                        </span>
+                      </td>
+
+                      {/* Actions column */}
+                      <td className="py-4 px-6 text-right">
+                        <div className="inline-flex items-center gap-2 justify-end">
+                          {/* Play button icon */}
+                          <button 
+                            onClick={() => alert(`Playing project: ${project.name}`)}
+                            className="p-1.5 border border-border-soft hover:border-accent-primary hover:bg-accent-primary/5 hover:text-accent-primary text-ink-secondary rounded-lg transition-all cursor-pointer"
+                            title="Play Video"
+                          >
+                            <Play className="w-3.5 h-3.5 fill-current" />
+                          </button>
+                          {/* Folder/Editor icon */}
+                          <button 
+                            onClick={() => alert(`Opening editor for: ${project.name}`)}
+                            className="p-1.5 border border-border-soft hover:border-accent-primary hover:bg-accent-primary/5 hover:text-accent-primary text-ink-secondary rounded-lg transition-all cursor-pointer"
+                            title="Open File Folder"
+                          >
+                            <FolderOpen className="w-3.5 h-3.5" />
+                          </button>
+                          {/* Overflow Menu */}
+                          <button 
+                            onClick={() => alert("More options...")}
+                            className="p-1.5 border border-border-soft hover:bg-bg-muted text-ink-secondary rounded-lg transition-all cursor-pointer"
+                            title="More Actions"
+                          >
+                            <MoreVertical className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+
+          {/* Prompt banner / status at bottom-most center */}
+          <div className="flex items-center justify-center py-4 select-none shrink-0">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-accent-primary/5 border border-accent-primary/10 rounded-full text-xs font-bold text-accent-primary shadow-sm">
+              <Lightbulb className="w-4 h-4 animate-bounce" />
+              <span>Select a trend above to start the AI pipeline</span>
+            </div>
           </div>
 
         </div>
