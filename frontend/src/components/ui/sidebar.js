@@ -23,7 +23,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-export function Sidebar({ activePath = "/", activeProject = null }) {
+export function Sidebar({ activePath = "/", activeProject = null, overrideProjectFiles = null }) {
   const router = useRouter();
 
   // Mock menu items for Dashboard
@@ -42,7 +42,7 @@ export function Sidebar({ activePath = "/", activeProject = null }) {
   ];
 
   // Project files list for active project (as in screenshot 2)
-  const projectFiles = [
+  const defaultProjectFiles = [
     { name: "research.md", type: "doc", status: "completed" },
     { name: "news.json", type: "json", status: "completed" },
     { name: "script.txt", type: "script", status: "completed" },
@@ -52,15 +52,18 @@ export function Sidebar({ activePath = "/", activeProject = null }) {
     { name: "captions.srt", type: "subtitle", status: "pending" },
     { name: "final.mp4", type: "video", status: "pending" }
   ];
+  const projectFiles = overrideProjectFiles || defaultProjectFiles;
 
   // Helper to render file icon based on file type and status
   const getFileIcon = (type, status) => {
     const isCompleted = status === "completed";
     const isInProgress = status === "in-progress";
+    const isReady = status === "ready";
     
     let colorClass = "text-ink-muted";
     if (isCompleted) colorClass = "text-trend-spark";
     if (isInProgress) colorClass = "text-accent-primary animate-pulse";
+    if (isReady) colorClass = "text-accent-primary";
 
     switch (type) {
       case "doc":
@@ -146,6 +149,7 @@ export function Sidebar({ activePath = "/", activeProject = null }) {
                   const isCompleted = file.status === "completed";
                   const isInProgress = file.status === "in-progress";
                   const isPending = file.status === "pending";
+                  const isReady = file.status === "ready";
 
                   return (
                     <div 
@@ -158,7 +162,7 @@ export function Sidebar({ activePath = "/", activeProject = null }) {
                     >
                       <div className="flex items-center gap-3">
                         {getFileIcon(file.type, file.status)}
-                        <span className={isCompleted ? "text-ink-primary font-medium" : isPending ? "text-ink-muted" : "font-bold"}>
+                        <span className={isCompleted ? "text-ink-primary font-medium" : isPending ? "text-ink-muted" : isReady ? "text-accent-primary font-bold" : "font-bold"}>
                           {file.name}
                         </span>
                       </div>
@@ -176,6 +180,11 @@ export function Sidebar({ activePath = "/", activeProject = null }) {
                         {isPending && (
                           <span className="text-[9px] font-bold text-ink-muted uppercase tracking-wide">
                             Pending
+                          </span>
+                        )}
+                        {isReady && (
+                          <span className="text-[9px] font-bold text-accent-primary uppercase tracking-wide">
+                            Ready
                           </span>
                         )}
                       </div>

@@ -72,7 +72,7 @@ export default function WorkflowPage() {
   ];
 
   const handleNextStep = () => {
-    alert("Moving to Step 3 of 3: Video Assembly & Preview Stage...");
+    router.push("/complete");
   };
 
   return (
