@@ -18,8 +18,10 @@ import {
   Zap
 } from "lucide-react";
 import { motion } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
+  const router = useRouter();
   const [selectedTrend, setSelectedTrend] = useState(1); // Default Card 1 selected as in the screenshot
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -105,7 +107,7 @@ export default function Dashboard() {
   };
 
   const handleStartPipeline = (trendTitle) => {
-    alert(`Starting the AI video generation pipeline for: "${trendTitle}"\nStep 1 of 3 complete! Proceeding to script analysis...`);
+    router.push("/workflow");
   };
 
   return (
